@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!-- saved from url=(0085)https://blog.jbfavre.org/2016/03/03/Linux-Driver-Webcam-FacetimeHD-Apple-MacBook-Pro/ -->
+<html prefix="og: http://ogp.me/ns#" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">   
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="googlebot" content="index,follow">
+  <meta name="robots" content="index,follow">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+
+  <title>A Linux driver for the Facetime HD camera on Apple MacBook Pro - Mon blog-notes à moi que j'ai</title>
+  
+  <meta name="description" content="I already detailled the installation of GNU/Linux Debian on an Apple MacBook Pro. Unsupported webcam was one of the most annoying part. yes I wrote “was”, because a driver is under active development.">
+  <meta name="author" content="Jean Baptiste Favre">
+  <meta name="copyright" content="All content copyright . All rights reserved.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="./A Linux driver for the Facetime HD camera on Apple MacBook Pro - Mon blog-notes à moi que j&#39;ai_files/blog-421e4ac0d1de100cb6b7da9852a5f7e1.css" rel="stylesheet" type="text/css">
+  <link rel="alternate" type="application/atom+xml" title="Feed" href="https://blog.jbfavre.org/atom.xml">
+
+  <link rel="alternate" type="application/atom+xml" title="Feed for category: sysadmin" href="https://blog.jbfavre.org/category/sysadmin/atom.xml">
+
+  <link rel="alternate" type="application/atom+xml" title="Feed for tag: debian" href="https://blog.jbfavre.org/tag/debian/atom.xml">
+  <link rel="alternate" type="application/atom+xml" title="Feed for tag: jessie" href="https://blog.jbfavre.org/tag/jessie/atom.xml">
+  <link rel="alternate" type="application/atom+xml" title="Feed for tag: macbook pro" href="https://blog.jbfavre.org/tag/macbook%20pro/atom.xml">
+
+  <!-- Twitter cards -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:creator" content="@jbfavre">
+  <meta name="twitter:title" content="A Linux driver for the Facetime HD camera on Apple MacBook Pro">
+  <meta name="twitter:url" content="//https://blog.jbfavre.org/2016/03/03/Linux-Driver-Webcam-FacetimeHD-Apple-MacBook-Pro/">
+  <meta name="twitter:description" content="I already detailled the installation of GNU/Linux Debian on an Apple MacBook Pro. Unsupported webcam was one of the most annoying part. yes I wrote “was”, because a driver is under active development.">
+  
+  <!-- OpenGraph -->
+  <meta property="og:title" content="A Linux driver for the Facetime HD camera on Apple MacBook Pro">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="//https://blog.jbfavre.org/2016/03/03/Linux-Driver-Webcam-FacetimeHD-Apple-MacBook-Pro/">
+  <meta property="og:description" content="I already detailled the installation of GNU/Linux Debian on an Apple MacBook Pro. Unsupported webcam was one of the most annoying part. yes I wrote “was”, because a driver is under active development.">
+  
+</head>
+<body class="post-template">
+  <header class="site-head ">
+    <div class="vertical">
+      <div class="site-head-content">
+ 
+        <h1 class="blog-title"><a href="https://blog.jbfavre.org/" title="home">Mon blog-notes à moi que j'ai</a></h1>
+        <p class="blog-description">Blog personnel d'un sysadmin, tendance hacker</p>
+      </div>
+    </div>
+  </header>
+<main class="content" role="main">
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">A Linux driver for the Facetime HD camera on Apple MacBook Pro</h1>
+    </header>
+    <aside class="post-meta">
+      <p><time datetime="2016-03-03">03 Mar 2016</time>
+         dans la catégorie&nbsp;<a rel="category" href="https://blog.jbfavre.org/category/sysadmin/">sysadmin</a>
+         <br>(tags:&nbsp;<a rel="tag" href="https://blog.jbfavre.org/tag/debian/">debian</a>, <a rel="tag" href="https://blog.jbfavre.org/tag/jessie/">jessie</a>, <a rel="tag" href="https://blog.jbfavre.org/tag/macbook%20pro/">macbook pro</a>)</p>
+
+
+      <section class="author">
+        <header><img class="profile" src="./A Linux driver for the Facetime HD camera on Apple MacBook Pro - Mon blog-notes à moi que j&#39;ai_files/jbfavre.jpg" alt="Jean Baptiste Favre&#39;s profile picture"></header>
+        <article><h4>Jean Baptiste Favre</h4><p>Administrateur système, mélomane et amoureux des livres.
+Ops lead chez BlaBlaCar le jour,
+<a href="https://moinecopiste.jbfavre.org/">moine copiste</a> du numérique la nuit.
+</p></article>
+      </section>
+
+      <section class="share">
+        <h4>Share this post</h4>
+        <a class="icon-twitter" href="https://twitter.com/share?text=A%20Linux%20driver%20for%20the%20Facetime%20HD%20camera%20on%20Apple%20MacBook%20Pro&amp;url=https%3A%2F%2Fblog.jbfavre.org%2F2016%2F03%2F03%2FLinux-Driver-Webcam-FacetimeHD-Apple-MacBook-Pro%2F&amp;via=jbfavre" onclick="window.open(this.href, &#39;twitter-share&#39;, &#39;width=550,height=235&#39;);return false;">
+          <span class="hidden">Twitter</span>
+        </a>
+        <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://blog.jbfavre.org/2016/03/03/Linux-Driver-Webcam-FacetimeHD-Apple-MacBook-Pro/" onclick="window.open(this.href, &#39;facebook-share&#39;,&#39;width=580,height=296&#39;);return false;">
+          <span class="hidden">Facebook</span>
+        </a>
+        <a class="icon-google-plus" href="https://plus.google.com/share?url=https://blog.jbfavre.org/2016/03/03/Linux-Driver-Webcam-FacetimeHD-Apple-MacBook-Pro/" onclick="window.open(this.href, &#39;google-plus-share&#39;, &#39;width=490,height=530&#39;);return false;">
+          <span class="hidden">Google+</span>
+        </a>
+      </section>
+      <section class="alternate-version">
+      
+        
+        
+          
+            <p lang="fr">Cette page est également disponible en <a href="https://blog.jbfavre.org/2016/03/03/Pilote-Linux-Webcam-FacetimeHD-Apple-MacBook-Pro/" lang="fr">français</a></p>
+          
+        
+      
+      </section>
+    </aside>
+    <section class="post-content">
+    
+    <p>I already detailled <a href="https://blog.jbfavre.org/2015/03/07/Debian-on-Macbook-Pro-11-1/">the installation of GNU/Linux Debian on an Apple MacBook Pro</a>. Unsupported webcam was one of the most annoying part. yes I wrote “was”, because a driver is under active development.</p>
+
+<p>Of course, I tested, and approved it.<br>
+But, even if manual installation of both driver and firmware works fine, I still prefer managing that kind of file with Debian packages.</p>
+
+<p>That’s the reason why I startes the packaging stuff.<br>
+Though it’s still an incomplete and in progress work, you can find it on my <a href="https://github.com/jbfavre/bcwc_pcie">github repository</a>.</p>
+
+<p>You will be able to build two Debian packages:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">broadcom-pcie-webcam-dkms</code> which provides the facetimehd driver source compatible with <code class="highlighter-rouge">DKMS</code></li>
+  <li><code class="highlighter-rouge">firmware-broadcom-pcie-webcam</code> which provides the binary firmware of the camera.<br>
+It’s downloaded from Appel <code class="highlighter-rouge">.dmg</code> updates.</li>
+</ul>
+
+<h2 id="building-the-package">Building the package</h2>
+
+<p>Stating you already a working dev environment, it’s very easy to build the Debian packages:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># git clone https://github.com/jbfavre/bcwc_pcie.git
+# cd bcwc_pcie
+# git clone debian
+# gbp buildpackage -us -uc --git-debian-branch=debian
+</code></pre>
+</div>
+
+<h2 id="installation">Installation</h2>
+
+<p>Once you have built the package, you can install them:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ dpkg -i ../firmware-broadcom-pcie-webcam_0.0.1*.deb ../broadcom-pcie-webcam-dkms_0.0.1*.deb
+</code></pre>
+</div>
+
+<p>If everything goes fine, you should have following files:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># ls -l /lib/firmware/facetimehd/
+total 1396
+-rw-r--r-- 1 root root 1425412 mars   3 15:06 firmware.bin
+# ls -l /lib/modules/4.4.0-1-amd64/updates/dkms/
+total 7488
+-rw-r--r-- 1 root root  165016 mars   3 15:07 facetimehd.ko
+</code></pre>
+</div>
+
+<p>If you find the files, you can now load the module and test it:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ modprobe facetimehd
+</code></pre>
+</div>
+
+<p>Enjoy :)</p>
+
+
+
+    </section>
+    <footer class="post-footer">
+    <section class="archive">
+      <h5>Sur le même sujet</h5>
+      <ul>
+        <li><span>03 Mar 2016</span>  <a href="https://blog.jbfavre.org/2016/03/03/Pilote-Linux-Webcam-FacetimeHD-Apple-MacBook-Pro/">Un pilote Linux pour la caméra Facetime HD des Apple MacBook Pro</a></li>        <li><span>07 Mar 2015</span>  <a href="https://blog.jbfavre.org/2015/03/07/Debian-on-Macbook-Pro-11-1/">GNU/Linux Debian on a Macbook Pro 11-1</a></li>        <li><span>06 Mar 2015</span>  <a href="https://blog.jbfavre.org/2015/03/06/Debian-Jessie-sur-un-Macbook-Pro-11-1/">GNU/Linux Debian Jessie sur un Macbook Pro 11-1</a></li>        <li><span>23 May 2016</span>  <a href="https://blog.jbfavre.org/2016/05/23/free-software-contributions-2016-01/">Free software contributions report #2016-01</a></li>        <li><span>23 May 2016</span>  <a href="https://blog.jbfavre.org/2016/05/23/contributions-logiciel-libre-2016-01/">Mes contributions au logiciel libre #2016-01</a></li> 
+      </ul>
+    </section>
+      
+      </footer>
+    </article>
+</main>
+
+  <footer class="site-footer">
+    <p><a class="subscribe icon-feed" href="https://blog.jbfavre.org/atom.xml"><span class="tooltip">Subscribe!</span></a></p>
+    <p>List of all <a href="https://blog.jbfavre.org/feeds/">available feeds</a></p>
+    <div class="inner">
+      <section class="copyright"><a href="https://blog.jbfavre.org/">Mon blog-notes à moi que j'ai</a> © • All rights reserved.</section>
+      <section class="poweredby">Made with Jekyll</section>
+    </div>
+  </footer>
+
+
+</body></html>
