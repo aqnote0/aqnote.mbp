@@ -1,1 +1,9 @@
-# Debian On MacBook Pro
+# MacBook Pro
+
+## MacOS
+
+Brew
+
+## Debian
+
+
