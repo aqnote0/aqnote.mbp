@@ -1,0 +1,463 @@
+#!/bin/bash
+
+#present options if no arguments given
+if [ $# -eq 0 ]; then
+	echo -e "Please select which Adwaita variant to generate:\n 0: gray\t 1: red \t 2: orange\t 3: yellow\n 4: grass\t 5: green\t 6: teal\t 7: cyan\n 8: blue\t 9: indigo\t10: violet\t11: magenta\n12: pink\t13: all"
+	read color_option
+	echo "Do you want to install the theme to your home directory? [Y/n]"
+	read install_option
+	echo "Do you want to delete the source files afterwards? [Y/n]"
+	read delete_option
+	echo "Do you want to generate compressed archive files locally? [Y/n]"
+	read compress_option
+	echo "Do you want this script to be verbose? [Y/n]"
+	read verbose_option
+#if arguments, parse for options
+else
+	#setting defaults
+	install_option="n"
+	delete_option="n"
+	compress_option="n"
+	verbose_option="n"
+
+	#scan through arguments for options/colors
+	while [ -n "$1" ]; do
+		case "$1" in
+			#if multiple options are combined into one argument, separate them (like a cheap getopts, but long options are ok)
+			-[cdhiv][cdhiv][cdhiv][cdhiv][cdhiv])
+				i=1
+				one=()
+				#this loop starts at the first letter of $1, adding option strings to the one array
+				while [ $i -lt ${#1} ] ; do
+					one+=("-${1:$i:1}")
+					i=$((i+1))
+				done
+				#this rebuilds the scripts arguments list, first with an arbitrary string (to be discarded by the shift below), then the options array as new arguments, then the rest of them
+				set -- "replaced" "${one[@]}" "${@:2}"
+				;;
+			-[cdhiv][cdhiv][cdhiv][cdhiv])
+				i=1
+				one=()
+				while [ $i -lt ${#1} ] ; do
+					one+=("-${1:$i:1}")
+					i=$((i+1))
+				done
+				set -- "replaced" "${one[@]}" "${@:2}"
+				;;
+			-[cdhiv][cdhiv][cdhiv])
+				i=1
+				one=()
+				while [ $i -lt ${#1} ] ; do
+					one+=("-${1:$i:1}")
+					i=$((i+1))
+				done
+				set -- "replaced" "${one[@]}" "${@:2}"
+				;;
+			-[cdhiv][cdhiv])
+				i=1
+				one=()
+				while [ $i -lt ${#1} ] ; do
+					one+=("-${1:$i:1}")
+					i=$((i+1))
+				done
+				set -- "replaced" "${one[@]}" "${@:2}"
+				;;
+			-h | "--help")
+				echo "Usage: adwaita-color-gen [OPTION] [COLOR]"
+				echo "Generates COLOR variant from gnome gitlab master branch and local files, to \"generated\" directory."
+				echo
+				echo "With no OPTION or COLOR, prompts for COLOR and whether to install."
+				echo "  -h, --help              this help prompt, then exit"
+				echo "  -i, --install           copy the variant(s) to the home \".themes\" directory"
+				echo "  -c, --compress          compress the generated variant(s) to \"archives\" directory"
+				echo "  -d, --delete            remove \"Adwaita-sources\" directory, as well as \"generated\" if -i is specified"
+				echo "  -v, --verbose           verbosely specify script activity"
+				echo "For color options, either a number or the name of the color can be entered:"
+				echo -e " 0: gray\t 1: red \t 2: orange\t 3: yellow\n 4: grass\t 5: green\t 6: teal\t 7: cyan\n 8: blue\t 9: indigo\t10: violet\t11: magenta\n12: pink\t13: all"
+				exit 0
+				;;
+			-i | "--install")
+				install_option="Y"
+				if [ -z "$2" ] && [ -z "$color_option" ]; then
+					echo -e "Please select which Adwaita variant to generate:\n 0: gray\t 1: red \t 2: orange\t 3: yellow\n 4: grass\t 5: green\t 6: teal\t 7: cyan\n 8: blue\t 9: indigo\t10: violet\t11: magenta\n12: pink\t13: all"
+					read color_option
+				fi
+				;;
+			-c | "--compress")
+				compress_option="Y"
+				if [ -z "$2" ] && [ -z "$color_option" ]; then
+					echo -e "Please select which Adwaita variant to generate:\n 0: gray\t 1: red \t 2: orange\t 3: yellow\n 4: grass\t 5: green\t 6: teal\t 7: cyan\n 8: blue\t 9: indigo\t10: violet\t11: magenta\n12: pink\t13: all"
+					read color_option
+				fi
+				;;
+			-d | "--delete")
+				delete_option="Y"
+				if [ -z "$2" ] && [ -z "$color_option" ]; then
+					echo -e "Please select which Adwaita variant to generate:\n 0: gray\t 1: red \t 2: orange\t 3: yellow\n 4: grass\t 5: green\t 6: teal\t 7: cyan\n 8: blue\t 9: indigo\t10: violet\t11: magenta\n12: pink\t13: all"
+					read color_option
+				fi
+				;;
+			-v | "--verbose")
+				verbose_option="Y"
+				if [ -z "$2" ] && [ -z "$color_option" ]; then
+					echo -e "Please select which Adwaita variant to generate:\n 0: gray\t 1: red \t 2: orange\t 3: yellow\n 4: grass\t 5: green\t 6: teal\t 7: cyan\n 8: blue\t 9: indigo\t10: violet\t11: magenta\n12: pink\t13: all"
+					read color_option
+				fi
+				;;
+                	"gray") color_option=0 ;;
+                	"red") color_option=1 ;;
+                	"orange") color_option=2 ;;
+                	"yellow") color_option=3 ;;
+                	"grass") color_option=4 ;;
+                	"green") color_option=5 ;;
+                	"teal") color_option=6 ;;
+                	"cyan") color_option=7 ;;
+                	"blue") color_option=8 ;;
+                	"indigo") color_option=9 ;;
+                	"violet") color_option=10 ;;
+                	"magenta") color_option=11 ;;
+                	"pink") color_option=12 ;;
+                	"all") color_option=13 ;;
+                	[0-9]) color_option=$1 ;;
+                	[01][0-9]) color_option=$1 ;;
+                	*) echo "Invalid input." ; exit 1 ;;
+		esac
+		shift
+	done
+fi
+
+#sanitizing input
+if ! ([ "$color_option" -ge 0 ] && [ "$color_option" -le 13 ]); then
+	echo "Please only enter a number from 0 through 13."
+	exit 1
+fi
+if [ "$install_option" != "Y" ] && [ "$install_option" != "y" ] && [ "$install_option" != "N" ] && [ "$install_option" != "n" ]; then
+	echo "Please only enter Y or n for installation option, case insensitive."
+        exit 1
+fi
+if [ "$delete_option" != "Y" ] && [ "$delete_option" != "y" ] && [ "$delete_option" != "N" ] && [ "$delete_option" != "n" ]; then
+	echo "Please only enter Y or n for deletion option, case insensitive."
+        exit 1
+fi
+if [ "$compress_option" != "Y" ] && [ "$compress_option" != "y" ] && [ "$compress_option" != "N" ] && [ "$compress_option" != "n" ]; then
+	echo "Please only enter Y or n for compression option, case insensitive."
+        exit 1
+fi
+if [ "$verbose_option" != "Y" ] && [ "$verbose_option" != "y" ] && [ "$verbose_option" != "N" ] && [ "$verbose_option" != "n" ]; then
+	echo "Please only enter Y or n for verbosity option, case insensitive."
+        exit 1
+fi
+
+#function to streamline verbosity
+verbose() {
+	if [ "$verbose_option" == "Y" ] || [ "$verbose_option" == "y" ] ; then
+		echo $@
+	fi
+}
+
+#check dependencies
+verbose "checking dependencies"
+dependencies=()
+if [ ! "$(which sassc 2> /dev/null)" ]; then
+	dependencies+=( "sassc" )
+fi
+
+if [ ! "$(which wget 2> /dev/null)" ]; then
+	dependencies+=( "wget" )
+fi
+
+if [ ! "$(which inkscape 2> /dev/null)" ]; then
+	dependencies+=( "inkscape" )
+fi
+
+if [ ! "$(which optipng 2> /dev/null)" ]; then
+	dependencies+=( "optipng" )
+fi
+
+if [ ! "$(which mogrify 2> /dev/null)" ]; then
+	dependencies+=( "imagemagick" )
+fi
+
+if [ ! "$(which gnome-shell 2> /dev/null)" ]; then
+	dependencies+=( "gnome" )
+fi
+
+if [ ${#dependencies[@]} -gt 0 ]; then
+	echo "Dependencies missing: ${dependencies[@]}"
+	exit 1
+fi
+
+#make working directory
+mkdir -p Adwaita-sources/{gnome-shell,gtk-3.0}
+mkdir archives
+
+#download/derive sources
+verbose "downloading sources if none exist"
+if [ -f ./Adwaita-sources/gnome-shell.tar.gz -a -f ./Adwaita-sources/gtk3.tar.gz ]; then
+	verbose files exist, using them
+else
+	if [ "$verbose_option" == "Y" ] || [ "$verbose_option" == "y" ] ; then
+		wget -O ./Adwaita-sources/gnome-shell.tar.gz https://gitlab.gnome.org/GNOME/gnome-shell/-/archive/master/gnome-shell-master.tar.gz?path=data/theme
+		# wget -O ./Adwaita-sources/gtk3.tar.gz https://gitlab.gnome.org/GNOME/gtk/-/archive/master/gtk-master.tar.gz?path=gtk/theme/Adwaita #master branch doesn't have working scrollbars
+		wget -O ./Adwaita-sources/gtk3.tar.gz https://gitlab.gnome.org/GNOME/gtk/-/archive/gtk-3-24/gtk-gtk-3-24.tar.gz?path=gtk/theme/Adwaita #3.24
+	else
+		wget -q -O ./Adwaita-sources/gnome-shell.tar.gz https://gitlab.gnome.org/GNOME/gnome-shell/-/archive/master/gnome-shell-master.tar.gz?path=data/theme
+		# wget -q -O ./Adwaita-sources/gtk3.tar.gz https://gitlab.gnome.org/GNOME/gtk/-/archive/master/gtk-master.tar.gz?path=gtk/theme/Adwaita #master branch doesn't have working scrollbars
+		wget -q -O ./Adwaita-sources/gtk3.tar.gz https://gitlab.gnome.org/GNOME/gtk/-/archive/gtk-3-24/gtk-gtk-3-24.tar.gz?path=gtk/theme/Adwaita #3.24
+	fi
+fi
+
+#extract sources, clean-up archives and gtk3 assets (that need to be regenerated anyway)
+verbose "extracting sources"
+if [ "$verbose_option" == "Y" ] || [ "$verbose_option" == "y" ] ; then
+	tar -C ./Adwaita-sources/gnome-shell --strip-components=3 -xzvf ./Adwaita-sources/gnome-shell.tar.gz gnome-shell-master-data-theme/data/theme
+	#tar -C ./Adwaita-sources/gtk-3.0 --strip-components=4 -xzvf ./Adwaita-sources/gtk3.tar.gz gtk-master-gtk-theme-Adwaita/gtk/theme/Adwaita #master branch
+	tar -C ./Adwaita-sources/gtk-3.0 --strip-components=4 -xzvf ./Adwaita-sources/gtk3.tar.gz gtk-gtk-3-24-gtk-theme-Adwaita/gtk/theme/Adwaita #3.24
+else
+	tar -C ./Adwaita-sources/gnome-shell --strip-components=3 -xzf ./Adwaita-sources/gnome-shell.tar.gz gnome-shell-master-data-theme/data/theme
+	#tar -C ./Adwaita-sources/gtk-3.0 --strip-components=4 -xzf ./Adwaita-sources/gtk3.tar.gz gtk-master-gtk-theme-Adwaita/gtk/theme/Adwaita #master branch
+	tar -C ./Adwaita-sources/gtk-3.0 --strip-components=4 -xzf ./Adwaita-sources/gtk3.tar.gz gtk-gtk-3-24-gtk-theme-Adwaita/gtk/theme/Adwaita #3.24
+fi
+rm -f ./Adwaita-sources/gtk-3.0/assets/*.png
+
+#easier to overwrite gtk.css than modify them to work
+verbose "modifying gtk.css"
+rm ./Adwaita-sources/gtk-3.0/gtk.css
+#echo "@import \"Adwaita.css\";" > ./Adwaita-sources/gtk-3.0/gtk-light.css #master branch
+#echo "@import \"Adwaita-dark.css\";" > ./Adwaita-sources/gtk-3.0/gtk-dark.css #master branch
+echo "@import \"gtk-contained.css\";" > ./Adwaita-sources/gtk-3.0/gtk-light.css #3.24
+echo "@import \"gtk-contained-dark.css\";" > ./Adwaita-sources/gtk-3.0/gtk-dark.css #3.24
+
+#clean up any references to standard gnome resources, use local user files instead
+for i in $(grep -lr "resource:///org" ./Adwaita-sources) ; do
+       sed -i -e 's/resource:\/\/\/org\/gnome\/shell\/theme\///g' $i
+done
+
+#time to make different colors
+#make the new hue
+change_hue() {
+        r="0x${1:1:2}"
+        g="0x${1:3:2}"
+        b="0x${1:5:2}"
+        if [[ $r -ge $g ]] && [[ $r -ge $b ]] ; then
+                max=$r
+        elif [[ $g -ge $b ]] ; then
+                max=$g
+        else
+                max=$b
+        fi
+        if [[ $r -lt $g ]] && [[ $r -lt $b ]] ; then
+                min=$r
+        elif [[ $g -lt $b ]] ; then
+                min=$g
+        else
+                min=$b
+        fi
+        if ([[ $g -lt $r ]] && [[ $r -lt $b ]]) || ([[ $b -lt $r ]] && [[ $r -lt $g ]]) ; then
+                mid=$r
+        elif ([[ $r -lt $g ]] && [[ $g -lt $b ]]) || ([[ $b -lt $g ]] && [[ $g -lt $r ]]) ; then
+                mid=$g
+        else
+                mid=$b
+        fi
+        avg="0x$(printf '%02x' "$(( ($max + $min)/2 ))")"
+	middiffs=("$(( $max - $mid ))" "$(( ($avg - $mid) % 0xff ))" "$(( ($mid - $avg) % 0xff ))" "$(( $mid - $min ))")
+        diff=${middiffs[0]}
+        for i in "${middiffs[@]}" ; do
+                if [[ "$i" -lt 0 ]] ; then
+                        i=$(( 0 - $i))
+                fi
+                if [[ "$i" -lt "$diff" ]] ; then
+                        diff="$i"
+                fi
+        done
+        mid0="0x$(printf '%02x' "$(( $min + $diff ))")"
+        mid1="0x$(printf '%02x' "$(( $avg - $diff ))")"
+        mid2="0x$(printf '%02x' "$(( $avg + $diff ))")"
+        mid3="0x$(printf '%02x' "$(( $max - $diff ))")"
+
+        case $2 in
+                "gray") local new_hue="#${avg:2:2}${avg:2:2}${avg:2:2}" ;;
+                "red") local new_hue="#${max:2:2}${mid0:2:2}${min:2:2}" ;;
+                "orange") local new_hue="#${max:2:2}${mid2:2:2}${min:2:2}" ;;
+                "yellow") local new_hue="#${mid3:2:2}${max:2:2}${min:2:2}" ;;
+                "grass") local new_hue="#${mid1:2:2}${max:2:2}${min:2:2}" ;;
+                "green") local new_hue="#${min:2:2}${max:2:2}${mid0:2:2}" ;;
+                "teal") local new_hue="#${min:2:2}${max:2:2}${mid2:2:2}" ;;
+                "cyan") local new_hue="#${min:2:2}${mid3:2:2}${max:2:2}" ;;
+                "blue") local new_hue="#${min:2:2}${mid1:2:2}${max:2:2}" ;;
+                "indigo") local new_hue="#${mid0:2:2}${min:2:2}${max:2:2}" ;;
+                "violet") local new_hue="#${mid2:2:2}${min:2:2}${max:2:2}" ;;
+                "magenta") local new_hue="#${max:2:2}${min:2:2}${mid3:2:2}" ;;
+                "pink") local new_hue="#${max:2:2}${min:2:2}${mid1:2:2}" ;;
+                *) echo wtf ; exit 1 ;;
+        esac
+	echo $new_hue
+}
+
+#take $color $filepath and $search_term as arguments, replacing color values with appropriate hues on lines with the term
+#if the search term is blank, replace all hues in the file
+replace_hue() {
+	if [[ -n $3 ]]; then
+		verbose -e "replacing colors with $1 in $2 using search term \"$3\""
+		for i in $(grep $3 $2 | grep -o "#[0-9a-fA-F]\{6\}") ; do
+			sed -i "/$3/s/$i/$(change_hue $i $1)/g" $2
+		done
+	else
+		verbose -e "replacing colors with $1 in $2"
+		for i in $(grep -o "#[0-9a-fA-F]\{6\}" $2); do
+			sed -i "s/$i/$(change_hue $i $1)/g" $2
+		done
+	fi
+
+}
+
+
+#color definitions and associated variable arrays
+colors=( "gray" "red" "orange" "yellow" "grass" "green" "teal" "cyan" "blue" "indigo" "violet" "magenta" "pink" )
+mogrify_mods=( "100,0,100" "100,100,183.3" "100,100,200" "100,100,16.7" "100,100,33.3" "100,100,50" "100,100,66.7" "100,100,83.3" "100,100,100" "100,100,116.7" "100,100,133.3" "100,100,150" "100,100,166.7" )
+
+#function to abstract the process per color, takes four arguments, taken from the arrays above
+create_variant() {
+	verbose "making $1 variant, modifying gtk2 pngs with mogrify -moduluate $2"
+
+	#make directories for light and dark versions of color
+	verbose "making directories and copying files"
+	mkdir -p generated/Adwaita-$1{,-dark}
+
+	#copy working contents into one directory, removing extraneous tar files afterwards
+	cp -r Adwaita-sources/* generated/Adwaita-$1
+	rm -f generated/Adwaita-$1/*.tar.gz
+
+	#edit the main css colors for gtk3 and gnome-shell
+	for i in generated/Adwaita-$1/{gtk-3.0,gnome-shell/gnome-shell-sass}/_colors.scss ; do
+		replace_hue $1 $i selected_bg_color
+	done
+
+	#edit the svg's colors, for gnome-shell and generated gtk3 assets
+	for i in generated/Adwaita-$1/{gtk-3.0,gnome-shell}/*.svg ; do
+		replace_hue $1 $i
+	done
+
+	#render the png assets from the modified svg (pulled from render-assets.sh, modified to work)
+	for i in $(cat generated/Adwaita-$1/gtk-3.0/assets.txt) ; do
+		if [ -f generated/Adwaita-$1/gtk-3.0/assets/$i.png ]; then
+			verbose "generated/Adwaita-$1/gtk-3.0/assets/$i.png exists"
+		else
+			verbose "rendering generated/Adwaita-$1/gtk-3.0/assets/$i.png"
+			inkscape --export-id=$i \
+				--export-id-only \
+				--export-png=generated/Adwaita-$1/gtk-3.0/assets/$i.png generated/Adwaita-$1/gtk-3.0/assets.svg >/dev/null
+		fi
+		if [ -f generated/Adwaita-$1/gtk-3.0/assets/$i@2.png ]; then
+			verbose "generated/Adwaita-$1/gtk-3.0/assets/$i@2.png exists"
+		else
+			verbose "rendering generated/Adwaita-$1/gtk-3.0/assets/$i@2.png"
+			inkscape --export-id=$i \
+				--export-dpi=180 \
+				--export-id-only \
+				--export-png=generated/Adwaita-$1/gtk-3.0/assets/$i@2.png generated/Adwaita-$1/gtk-3.0/assets.svg >/dev/null
+		fi
+	done
+
+	#generate light version of gtk3 css from the scss file
+        verbose "generating Adwaita-$1 gtk3 css file"
+#        sassc -M -t compact generated/Adwaita-$1/gtk-3.0/Adwaita.scss generated/Adwaita-$1/gtk-3.0/Adwaita.css #master branch
+        sassc -M -t compact generated/Adwaita-$1/gtk-3.0/gtk-contained.scss generated/Adwaita-$1/gtk-3.0/gtk-contained.css #3.24
+
+	#generate dark version of gtk3 css from the scss file
+        verbose "generating Adwaita-$1-dark gtk3 css file"
+#        sassc -M -t compact generated/Adwaita-$1/gtk-3.0/Adwaita-dark.scss generated/Adwaita-$1/gtk-3.0/Adwaita-dark.css
+        sassc -M -t compact generated/Adwaita-$1/gtk-3.0/gtk-contained-dark.scss generated/Adwaita-$1/gtk-3.0/gtk-contained-dark.css #3.24
+
+	#copy the assets from light to dark, because minus two files they're basically the same
+        verbose "copying assets to dark version"
+        cp -r generated/Adwaita-$1/* generated/Adwaita-$1-dark
+
+	#copy gtk2 folders to respective directories
+	cp -r /usr/share/themes/Adwaita/gtk-2.0 ./generated/Adwaita-$1/
+	cp -r /usr/share/themes/Adwaita-dark/gtk-2.0 ./generated/Adwaita-$1-dark/
+
+	#generate dark version of gnome-shell css from the scss file
+        verbose "generating Adwaita-$1-dark gnome-shell.css"
+        sassc -M -t compact generated/Adwaita-$1-dark/gnome-shell/gnome-shell.scss generated/Adwaita-$1-dark/gnome-shell/gnome-shell.css
+
+	#generate light version of gnome-shell css from the scss file
+        verbose "generating Adwaita-$1 gnome-shell.css"
+	sed -i -e 's/dark/light/g' generated/Adwaita-$1/gnome-shell/gnome-shell.scss
+        sassc -M -t compact generated/Adwaita-$1/gnome-shell/gnome-shell.scss generated/Adwaita-$1/gnome-shell/gnome-shell.css
+
+	#modify the gtk2 assets directly
+	mogrify -modulate $2 generated/Adwaita-$1/gtk-2.0/assets/*.png
+	replace_hue $1 generated/Adwaita-$1/gtk-2.0/gtkrc "selected_bg_color"
+	mogrify -modulate $2 generated/Adwaita-$1-dark/gtk-2.0/assets/*.png
+	replace_hue $1 generated/Adwaita-$1-dark/gtk-2.0/gtkrc "selected_bg_color"
+
+	#link gtk.css to the appropriate file
+        verbose "linking gtk.css as appropriate"
+        ln -s gtk-light.css generated/Adwaita-$1/gtk-3.0/gtk.css
+        ln -s gtk-dark.css generated/Adwaita-$1-dark/gtk-3.0/gtk.css
+
+	#copy the appropriate index.theme to the light or dark folders, then edit for colors
+        verbose "copying and modifying index.theme file to reflect new color"
+        cp /usr/share/themes/Adwaita/index.theme generated/Adwaita-$1/
+        sed -i "/Name=/s/Adwaita/Adwaita-$1/g" generated/Adwaita-$1/index.theme
+        cp /usr/share/themes/Adwaita-dark/index.theme generated/Adwaita-$1-dark/
+        sed -i "/Name=/s/Adwaita/Adwaita-$1/g" generated/Adwaita-$1-dark/index.theme
+	
+	#compress all generated files, add to archive folder
+	if [ "$compress_option" == "Y" ] || [ "$compress_option" == "y" ] ; then
+		verbose "compressing to archives/Adwaita-$1.tar.gz and archives/Adwaita-$1-dark.tar.gz"
+		if [ "$verbose_option" == "Y" ] || [ "$verbose_option" == "y" ] ; then
+			tar -czvf archives/Adwaita-$1.tar.gz -C generated Adwaita-$1
+			tar -czvf archives/Adwaita-$1-dark.tar.gz -C generated Adwaita-$1-dark
+		else
+			tar -czf archives/Adwaita-$1.tar.gz -C generated Adwaita-$1
+			tar -czf archives/Adwaita-$1-dark.tar.gz -C generated Adwaita-$1-dark
+		fi
+	fi
+
+	#copy generated file to .themes directory, if installing
+	if [ "$install_option" == "Y" ] || [ "$install_option" == "y" ] ; then
+		verbose "installing Adwaita-$1"
+		cp -r generated/Adwaita-$1 ~/.themes/
+		cp -r generated/Adwaita-$1-dark ~/.themes/
+
+		#deleting generated directory, if specified
+		if [ "$delete_option" == "Y" ] || [ "$delete_option" == "y" ] ; then
+			verbose "deleting generated/Adwaita-$1 directories after install"
+			rm -rf generated/Adwaita-$1{,-dark}
+		fi
+	fi
+
+        verbose "done with Adwaita-$1"
+}
+
+#use the user input as the index value, unless it's 13, then do all of them
+if [ "$color_option" -ge 0 ] && [ "$color_option" -le 12 ]; then
+	color="${colors[$color_option]}"
+	mogrify_mod="${mogrify_mods[$color_option]}"
+	create_variant $color $mogrify_mod
+else
+	for i in "${!colors[@]}"; do
+		color="${colors[$i]}"
+		mogrify_mod="${mogrify_mods[$i]}"
+		create_variant $color $mogrify_mod
+	done
+	if [ "$compress_option" == "Y" ] || [ "$compress_option" == "y" ] ; then
+		verbose "compressing all generated variants to archives/Adwaita-all.tar.gz"
+		if [ "$verbose_option" == "Y" ] || [ "$verbose_option" == "y" ] ; then
+			tar -czvf archives/Adwaita-all.tar.gz generated
+		else
+			tar -czf archives/Adwaita-all.tar.gz generated
+		fi
+	fi
+fi
+
+#delete Adwaita-sources if specified
+if [ "$delete_option" == "Y" ] || [ "$delete_option" == "y" ] ; then
+	verbose "deleting source files"
+	rm -rf Adwaita-sources
+fi
+
+verbose "done!"
